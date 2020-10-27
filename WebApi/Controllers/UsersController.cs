@@ -12,9 +12,11 @@ using Microsoft.AspNetCore.Authorization;
 using WebApi.Services;
 using WebApi.Entities;
 using WebApi.Models.Users;
+using System.Web.Http.Filters;
 
 namespace WebApi.Controllers
 {
+    [AllowCrossSiteJson]
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -23,6 +25,18 @@ namespace WebApi.Controllers
         private IUserService _userService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
+
+
+        public class AllowCrossSiteJsonAttribute : ActionFilterAttribute
+        {
+            public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+            {
+                if (actionExecutedContext.Response != null)
+                    actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+                base.OnActionExecuted(actionExecutedContext);
+            }
+        }
 
         public UsersController(
             IUserService userService,

@@ -30,12 +30,26 @@ namespace WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             // use sql server db in production and sqlite db in development
+            Console.WriteLine("checking env");
             if (_env.IsProduction())
-                services.AddDbContext<DataContext>();
-            else
+            {
+                Console.WriteLine("using prod");
+                //services.AddDbContext<DataContext>();
                 services.AddDbContext<DataContext, SqliteDataContext>();
+            }
 
-            services.AddCors();
+            else if(_env.IsStaging())
+            {
+                services.AddDbContext<DataContext, LocalStorageContext>();
+            }
+            else
+            {
+                Console.WriteLine("using sqlite");
+                services.AddDbContext<DataContext, SqliteDataContext>();
+            }
+
+
+            //services.AddCors();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -87,20 +101,37 @@ namespace WebApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DataContext dataContext)
         {
             // migrate any database changes on startup (includes initial db creation)
-            dataContext.Database.Migrate();
+            if(!_env.IsStaging())
+            {
+                dataContext.Database.Migrate();
+            }
 
             app.UseRouting();
 
             // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            //app.UseCors(x => x
+            //    .AllowAnyOrigin()
+            //    .AllowAnyMethod()
+            //    .AllowAnyHeader());
 
-            app.UseAuthentication();
+            app.UseCors(builder =>
+            {
+                builder.SetIsOriginAllowed(MyIsOriginAllowed)
+                .AllowAnyHeader().AllowAnyMethod();//.AllowCredentials();
+            });
+
+            //app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+        }
+        private static bool MyIsOriginAllowed(string origin)
+        {
+            var isAllowed = true;
+
+            // Your logic.
+
+            return isAllowed;
         }
     }
 }

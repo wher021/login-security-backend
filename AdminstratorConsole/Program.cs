@@ -26,7 +26,7 @@ namespace AdminstratorConsole
             {
                 Method = HttpMethod.Post,
                 Content = new StringContent(JsonConvert.SerializeObject(user), Encoding.UTF8, "application/json"),
-                RequestUri = new Uri(@"http://localhost:51346/users/register")//192.168.1.128:4444
+                RequestUri = new Uri(@"http://192.168.1.212:4000/users/register")//192.168.1.128:4444
             };
 
 
