@@ -49,6 +49,15 @@ namespace WebApi.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("ping")]
+        public IActionResult Get()
+        {
+            //_hub.Clients.All.SendAsync("transferchartdata", "willy123");
+
+            return Ok(new { Message = "Request Completed" });
+        }
+
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]AuthenticateModel model)
         {
@@ -101,7 +110,7 @@ namespace WebApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult GetAll()
         {
