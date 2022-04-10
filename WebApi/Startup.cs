@@ -31,7 +31,7 @@ namespace WebApi
         {
             // use sql server db in production and sqlite db in development
             Console.WriteLine("checking env");
-            if (_env.IsProduction())
+            if (_env.IsProduction())//PROD is the default in kubernetes if environemnet variable DOTNET_ENVIRONMENT has not been set
             {
                 Console.WriteLine("using prod");
                 //services.AddDbContext<DataContext>();
